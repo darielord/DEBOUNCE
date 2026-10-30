@@ -21,9 +21,13 @@ export async function fetchCharacters(
 
     const data: unknown = await response.json();
 
-    if (isCharacterReply(data)) {
-      return { ok: false, error: { kind: "invalid-data", message: "error" } };
+    if (!isCharacterReply(data)) {
+      return {
+        ok: false,
+        error: { kind: "invalid-data", message: "Unexpected response shape" },
+      };
     }
+    return { ok: true, data };
   } catch {
     return { ok: false, error: { kind: "network" } };
   }
