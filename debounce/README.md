@@ -1,32 +1,26 @@
-# React + TypeScript + Vite
+# Debounce
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+## Problem
 
-Currently, two official plugins are available:
+One request per keystroke. API answers 429 when typing too fast.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## How I measured
 
-## React Compiler
+I opened the Network tab, disabled the cache, cleared the log, and typed "rick morty".
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Results
 
-## Expanding the Oxlint configuration
+Typing "rick morty" with the cache disabled and the network log cleared before each run:
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+| Typing | Requests | Canceled | 200 | 429 | 404 |
+| ------ | -------- | -------- | --- | --- | --- |
+| Fast   | 10       | 0        | 2   | 8   | 0   |
+| Slow   | 10       | 0        | 2   | 6   | 2   |
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
+Both runs sent one request per keystroke. The runs were done back to back, so the rate limit carried over between them.
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Conclusion
+
+## Conclusion
+
+The search currently sends one request per keystroke: 10 requests for "rick morty". The API rejects most of them with a 429. Debouncing the input should reduce this to a single request once the user stops typing.
