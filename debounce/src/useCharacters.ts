@@ -7,6 +7,8 @@ import { type RequestState } from "./types";
 import { type CharacterReply } from "./types";
 import { fetchCharacters } from "./fetchCharacters";
 
+const MIN_CHARACTERS = 2;
+
 export function useCharacters(
   name: string,
 ): RequestState<CharacterReply, ApiError> {
@@ -14,24 +16,31 @@ export function useCharacters(
     status: "idle",
   });
 
+  const trimmed = name.trim();
+
   useEffect(() => {
     const controller = new AbortController();
 
+    if (trimmed.length < MIN_CHARACTERS) {
+      setState({ status: "idle" });
+      return;
+    }
+
     setState({ status: "loading" });
 
-    fetchCharacters(name, controller.signal).then((Result) => {
+    fetchCharacters(trimmed, controller.signal).then((result) => {
       if (!controller.signal.aborted) {
-        if (Result.ok) {
-          setState({ status: "success", data: Result.data });
+        if (result.ok) {
+          setState({ status: "success", data: result.data });
         } else {
-          setState({ status: "error", error: Result.error });
+          setState({ status: "error", error: result.error });
         }
       }
     });
     return () => {
       controller.abort();
     };
-  }, [name]);
+  }, [trimmed]);
 
   return state;
 }
