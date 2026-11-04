@@ -1,20 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useCharacters } from "./useCharacters";
 import { renderCharacters } from "./renderCharacters";
-
+import { useDebounce } from "./useDebounce";
 export function App() {
   const [text, setText] = useState<string>("");
 
-  const [debouncedText, setDebouncedText] = useState<string>("");
-
+  const debouncedText = useDebounce(text, 500);
   const request = useCharacters(debouncedText);
-
-  useEffect(() => {
-    const time = setTimeout(() => {
-      setDebouncedText(text);
-    }, 500);
-    return () => clearTimeout(time);
-  }, [text]);
 
   return (
     <div className="App">
