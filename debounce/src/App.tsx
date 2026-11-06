@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useCharacters } from "./useCharacters";
 import { renderCharacters } from "./renderCharacters";
 import { useDebounce } from "./useDebounce";
+import { RickSprite } from "./components/RickSprite";
 
 export function App() {
   const [text, setText] = useState<string>("");
@@ -27,7 +28,10 @@ export function App() {
         onChange={(event) => setText(event.target.value)}
         value={text}
       />
+
       {renderCharacters(request)}
+
+      <RickSprite />
     </div>
   );
 }
