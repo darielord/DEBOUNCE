@@ -17,8 +17,26 @@ export function RickSprite() {
       return;
     }
 
-    ctx.fillStyle = "#00ff00";
-    ctx.fillRect(0, 0, sprite.anchoCuadro, sprite.altoCuadro);
+    const img = new Image();
+
+    img.src = sprite.ruta;
+
+    img.onload = () => {
+      ctx.drawImage(
+        img,
+        0,
+        0,
+        sprite.anchoCuadro,
+        sprite.altoCuadro,
+        0,
+        0,
+        sprite.anchoCuadro,
+        sprite.altoCuadro,
+      );
+    };
+    return () => {
+      img.onload = null;
+    };
   }, []);
 
   return (
