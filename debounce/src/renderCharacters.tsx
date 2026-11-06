@@ -4,6 +4,26 @@ import { type CharacterReply } from "./types";
 
 import { type ApiError } from "./types";
 
+function errorMessage(error: ApiError): string {
+  switch (error.kind) {
+    case "network":
+      return "No hay internet o servidor caido";
+    case "http":
+      if (error.status === 404) {
+        return "No hay resultados para esa búsqueda";
+      } else if (error.status === 429) {
+        return "buscando muy rapido";
+      } else {
+        return `error ${error.status}`;
+      }
+    case "invalid-data":
+      return "respuesta inesperada";
+    default:
+      const pred: never = error;
+      throw new Error(`Estado desconocido ${pred}`);
+  }
+}
+
 export function renderCharacters(
   request: RequestState<CharacterReply, ApiError>,
 ) {
@@ -28,7 +48,7 @@ export function renderCharacters(
       );
 
     case "error":
-      return <p> {"Error increible"}</p>;
+      return <p> {errorMessage(request.error)}</p>;
 
     default:
       const pred: never = request;
